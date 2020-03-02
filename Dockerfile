@@ -129,7 +129,7 @@ RUN apt-get update
 RUN apt-get install -y pkg-config
 
 # Opencv dependencies
-RUN apt-get install -y libgtk-3-dev:armhf libcanberra-gtk3-dev:armhf
+#RUN apt-get install -y libgtk-3-dev:armhf libcanberra-gtk3-dev:armhf
 RUN apt-get install -y libtiff-dev:armhf zlib1g-dev:armhf
 RUN apt-get install -y libjpeg-dev:armhf libpng-dev:armhf
 RUN apt-get install -y libavcodec-dev:armhf libavformat-dev:armhf libswscale-dev:armhf libv4l-dev:armhf
@@ -139,27 +139,31 @@ RUN apt-get install -y libfreetype6-dev:armhf libharfbuzz-dev:armhf
 # Download Opencv
 RUN mkdir -p /home/develop/opencv_all
 WORKDIR /home/develop/opencv_all
-RUN wget -O opencv.tar.gz https://github.com/opencv/opencv/archive/4.1.0.tar.gz
+RUN wget -O opencv.tar.gz https://github.com/opencv/opencv/archive/4.2.0.tar.gz
 RUN tar xf opencv.tar.gz
-RUN wget -O opencv_contrib.tar.gz https://github.com/opencv/opencv_contrib/archive/4.1.0.tar.gz
+RUN wget -O opencv_contrib.tar.gz https://github.com/opencv/opencv_contrib/archive/4.2.0.tar.gz
 RUN tar xf opencv_contrib.tar.gz
 RUN rm *.tar.gz
 
 # Set env
 ENV PKG_CONFIG_PATH=/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/share/pkgconfig
 ENV PKG_CONFIG_LIBDIR=/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/share/pkgconfig
-ENV LD_LIBRARY_PATH=/opt/cross-pi-gcc/lib:/usr/lib/arm-linux-gnueabihf:/lib/arm-linux-gnueabihf:/opt/opencv-4.1.0/lib
-ENV LD_RUN_PATH=/usr/lib/arm-linux-gnueabihf:/lib/arm-linux-gnueabihf:/opt/opencv-4.1.0/lib
+ENV LD_LIBRARY_PATH=/opt/cross-pi-gcc/lib:/usr/lib/arm-linux-gnueabihf:/lib/arm-linux-gnueabihf:/opt/opencv-4.2.0/lib
+ENV LD_RUN_PATH=/usr/lib/arm-linux-gnueabihf:/lib/arm-linux-gnueabihf:/opt/opencv-4.2.0/lib
+
+RUN apt-get install -y crossbuild-essential-armhf
 
 # Compile opencv
-RUN mkdir -p /home/develop/opencv_all/opencv-4.1.0/build
-WORKDIR /home/develop/opencv_all/opencv-4.1.0/build
-RUN echo "tmp"
+RUN mkdir -p /home/develop/opencv_all/opencv-4.2.0/build
+WORKDIR /home/develop/opencv_all/opencv-4.2.0/build
+RUN echo "tmpa"
 RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
-          -D CMAKE_CXX_FLAGS=-mfloat-abi=hard -L/opt/cross-pi-gcc/arm-linux-gnueabihf/include/linux \
-          -D CMAKE_INSTALL_PREFIX=/opt/opencv-4.1.0 \
+          -D CMAKE_C_FLAGS="-mfloat-abi=hard -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf" \
+          -D CMAKE_CXX_FLAGS="-mfloat-abi=hard -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf" \
+          -D CMAKE_SHARED_LINKER_FLAGS="-L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf" \
+          -D CMAKE_INSTALL_PREFIX=/opt/opencv-4.2.0 \
           -D CMAKE_TOOLCHAIN_FILE=../platforms/linux/arm-gnueabi.toolchain.cmake \
-          -D OPENCV_EXTRA_MODULES_PATH=/home/develop/opencv_all/opencv_contrib-4.1.0/modules \
+          -D OPENCV_EXTRA_MODULES_PATH=/home/develop/opencv_all/opencv_contrib-4.2.0/modules \
           -D OPENCV_ENABLE_NONFREE=ON \
           -D ENABLE_NEON=ON \
           -D ENABLE_VFPV3=ON \
@@ -170,9 +174,9 @@ RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
           -D BUILD_EXAMPLES=OFF ..
 
 #RUN find / -name "limits.h" -print
-RUN sed -i -e 's@limits.h@linux/limits.h@g' /home/develop/opencv_all/opencv-4.1.0/3rdparty/libjasper/jasper/jas_stream.h
-RUN sed -i -e 's@limits.h@linux/limits.h@g' /home/develop/opencv_all/opencv-4.1.0/modules/ts/src/ts_gtest.cpp
-RUN sed -i -e 's@limits.h@linux/limits.h@g' /home/develop/opencv_all/opencv-4.1.0/3rdparty/ittnotify/src/ittnotify/ittnotify_static.c
+RUN sed -i -e 's@limits.h@linux/limits.h@g' /home/develop/opencv_all/opencv-4.2.0/3rdparty/libjasper/jasper/jas_stream.h
+RUN sed -i -e 's@limits.h@linux/limits.h@g' /home/develop/opencv_all/opencv-4.2.0/modules/ts/src/ts_gtest.cpp
+RUN sed -i -e 's@limits.h@linux/limits.h@g' /home/develop/opencv_all/opencv-4.2.0/3rdparty/ittnotify/src/ittnotify/ittnotify_static.c
 
 RUN make -j$(nproc)
 RUN make install/strip
