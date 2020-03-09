@@ -187,14 +187,13 @@ RUN git clone https://gist.github.com/sol-prog/ed383474872958081985de733eaf352d 
 RUN cd opencv_cpp_compile_settings
 RUN cp /home/develop/opencv_cpp_compile_settings/opencv.pc /usr/lib/arm-linux-gnueabihf/pkgconfig
 
-# Compile Wiringpi
-WORKDIR /home/develop
-RUN git clone https://github.com/WiringPi/WiringPi.git
-WORKDIR /home/develop/WiringPi
-ENV WIRINGPI_SUDO=
-RUN find . -name Makefile -exec sed -i -e "s@gcc@arm-linux-gnueabihf-gcc@g" {} \;
-RUN sh build
-
+## Compile Wiringpi
+#WORKDIR /home/develop
+#RUN git clone https://github.com/WiringPi/WiringPi.git
+#WORKDIR /home/develop/WiringPi
+#ENV WIRINGPI_SUDO=
+#RUN find . -name Makefile -exec sed -i -e "s@gcc@arm-linux-gnueabihf-gcc@g" {} \;
+#RUN sh build debian
 
 #TODO Clean home
 
