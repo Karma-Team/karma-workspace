@@ -1,5 +1,6 @@
 # Ignore workspace files
 .container
 toolsChain
+.metadata
 # Ignore data files
 *.tar.gz
