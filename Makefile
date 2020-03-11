@@ -3,22 +3,24 @@ BUILD_NAME=karma-crosscompiler-nogtk
 build:
 	docker build -f Dockerfile --network=host -t ${BUILD_NAME} .
 
-create: .container
-
 .container:
 	docker create ${BUILD_NAME} > .container
 
-save-image:
-	docker image save -o ${BUILD_NAME}.tar.gz ${BUILD_NAME}:latest
+toolsChain:
+	wget https://drive.google.com/open?id=1xslCVDkM9jt5LxSARN-TDuqKrP2hwnmI
+	tar xf toolsChain
+	rm toolsChain.tar.gz
 
-load-image:
-	docker image import ${BUILD_NAME}.tar.gz
+docker:
+	docker pull karmateam/karma-crosscompiler-nogtk:latest
 
-copy-include: .container
+opencv: .container toolsChain
 	docker cp $(cat .container):/opt/opencv-4.2.0/include/opencv4/opencv2 toolsChain/include/
 
+setup-env: opencv
 
 clean:
-	rm -r toolsChain/opencv2
-	rm .container
+	rm -rf toolsChain
+	rm -f .container
+	rm -f ${BUILD_NAME}.tar.gz
 
