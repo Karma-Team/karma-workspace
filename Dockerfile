@@ -160,11 +160,10 @@ RUN apt-get install -y crossbuild-essential-armhf
 # Compile opencv
 RUN mkdir -p /home/develop/opencv_all/opencv-4.2.0/build
 WORKDIR /home/develop/opencv_all/opencv-4.2.0/build
-RUN echo "tmpa"
 RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
           -D CMAKE_C_FLAGS="-mfloat-abi=hard -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf" \
           -D CMAKE_CXX_FLAGS="-mfloat-abi=hard -L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf" \
-          -D CMAKE_SHARED_LINKER_FLAGS="-L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf" \
+          -D CMAKE_SHARED_LINKER_FLAGS="-L/usr/lib/arm-linux-gnueabihf -L/lib/arm-linux-gnueabihf -Wl,-rpath-link,/usr/lib/arm-linux-gnueabihf:/lib/arm-linux-gnueabihf" \
           -D CMAKE_INSTALL_PREFIX=/opt/opencv-4.2.0 \
           -D CMAKE_TOOLCHAIN_FILE=../platforms/linux/arm-gnueabi.toolchain.cmake \
           -D OPENCV_EXTRA_MODULES_PATH=/home/develop/opencv_all/opencv_contrib-4.2.0/modules \
