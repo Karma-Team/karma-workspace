@@ -12,6 +12,12 @@ Il est possible de vérifier si l'installation est fonctionnelle en lançant
 docker image ls
 ```
 Si la commande échoue, l'installation de Docker est à revoir.
+Pour ajouter le Docker au groupe utilisateur réaliser les commandes suivante :
+```
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker 
+```
 
 ### Étapes
 1. Cloner ce dépôt
